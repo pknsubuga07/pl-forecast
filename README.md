@@ -4,6 +4,8 @@ A personal, educational project that predicts upcoming Premier League matches fr
 explains each prediction, compares it with bookmaker odds, and keeps an honest, frozen record of
 how it did. **Not a betting tool.**
 
+**Live dashboard: https://pl-forecast.vercel.app/** (updated automatically by GitHub Actions)
+
 | Fixtures | Match detail | Model performance |
 |---|---|---|
 | ![Fixtures](docs/screenshots/fixtures.jpg) | ![Match](docs/screenshots/match.jpg) | ![Performance](docs/screenshots/performance.jpg) |
