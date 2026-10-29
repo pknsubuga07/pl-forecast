@@ -1,0 +1,28 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Rebuildable data: downloaded source files and the SQLite database (cached in CI instead).
+data/raw/
+data/epl.sqlite
+data/epl.sqlite-*
+*.tmp
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Web
+web/node_modules/
+web/.next/
+web/out/
+web/next-env.d.ts
+web/*.tsbuildinfo
+web/public/data.tmp/
+
+# OS / editor
+.DS_Store
+.claude/settings.local.json

@@ -1,0 +1,181 @@
+source,alias,team_id
+football-data,Arsenal,arsenal
+fpl,Arsenal,arsenal
+espn,Arsenal,arsenal
+football-data,Aston Villa,aston-villa
+fpl,Aston Villa,aston-villa
+espn,Aston Villa,aston-villa
+football-data,Birmingham,birmingham
+fpl,Birmingham,birmingham
+espn,Birmingham City,birmingham
+football-data,Blackburn,blackburn
+fpl,Blackburn,blackburn
+espn,Blackburn Rovers,blackburn
+football-data,Blackpool,blackpool
+fpl,Blackpool,blackpool
+espn,Blackpool,blackpool
+football-data,Bolton,bolton
+fpl,Bolton,bolton
+espn,Bolton Wanderers,bolton
+football-data,Bournemouth,bournemouth
+fpl,Bournemouth,bournemouth
+espn,AFC Bournemouth,bournemouth
+football-data,Brentford,brentford
+fpl,Brentford,brentford
+espn,Brentford,brentford
+football-data,Brighton,brighton
+fpl,Brighton,brighton
+espn,Brighton & Hove Albion,brighton
+football-data,Burnley,burnley
+fpl,Burnley,burnley
+espn,Burnley,burnley
+football-data,Cardiff,cardiff
+fpl,Cardiff,cardiff
+espn,Cardiff City,cardiff
+football-data,Charlton,charlton
+fpl,Charlton,charlton
+espn,Charlton Athletic,charlton
+football-data,Chelsea,chelsea
+fpl,Chelsea,chelsea
+espn,Chelsea,chelsea
+football-data,Coventry,coventry
+fpl,Coventry City,coventry
+fpl,Coventry,coventry
+espn,Coventry City,coventry
+football-data,Crystal Palace,crystal-palace
+fpl,Crystal Palace,crystal-palace
+espn,Crystal Palace,crystal-palace
+football-data,Derby,derby
+fpl,Derby,derby
+espn,Derby County,derby
+football-data,Everton,everton
+fpl,Everton,everton
+espn,Everton,everton
+football-data,Fulham,fulham
+fpl,Fulham,fulham
+espn,Fulham,fulham
+football-data,Huddersfield,huddersfield
+fpl,Huddersfield,huddersfield
+espn,Huddersfield Town,huddersfield
+football-data,Hull,hull
+fpl,Hull City,hull
+fpl,Hull,hull
+espn,Hull City,hull
+football-data,Ipswich,ipswich
+fpl,Ipswich Town,ipswich
+fpl,Ipswich,ipswich
+espn,Ipswich Town,ipswich
+football-data,Leeds,leeds
+fpl,Leeds,leeds
+espn,Leeds United,leeds
+football-data,Leicester,leicester
+fpl,Leicester,leicester
+espn,Leicester City,leicester
+football-data,Liverpool,liverpool
+fpl,Liverpool,liverpool
+espn,Liverpool,liverpool
+football-data,Luton,luton
+fpl,Luton,luton
+espn,Luton Town,luton
+football-data,Man City,man-city
+fpl,Man City,man-city
+espn,Manchester City,man-city
+football-data,Man United,man-united
+fpl,Man Utd,man-united
+espn,Manchester United,man-united
+football-data,Middlesbrough,middlesbrough
+fpl,Middlesbrough,middlesbrough
+espn,Middlesbrough,middlesbrough
+football-data,Newcastle,newcastle
+fpl,Newcastle,newcastle
+espn,Newcastle United,newcastle
+football-data,Norwich,norwich
+fpl,Norwich,norwich
+espn,Norwich City,norwich
+football-data,Nott'm Forest,nottm-forest
+fpl,Nott'm Forest,nottm-forest
+espn,Nottingham Forest,nottm-forest
+football-data,Portsmouth,portsmouth
+fpl,Portsmouth,portsmouth
+espn,Portsmouth,portsmouth
+football-data,QPR,qpr
+fpl,QPR,qpr
+espn,Queens Park Rangers,qpr
+football-data,Reading,reading
+fpl,Reading,reading
+espn,Reading,reading
+football-data,Sheffield United,sheffield-united
+fpl,Sheffield Utd,sheffield-united
+espn,Sheffield United,sheffield-united
+football-data,Southampton,southampton
+fpl,Southampton,southampton
+espn,Southampton,southampton
+football-data,Stoke,stoke
+fpl,Stoke,stoke
+espn,Stoke City,stoke
+football-data,Sunderland,sunderland
+fpl,Sunderland,sunderland
+espn,Sunderland,sunderland
+football-data,Swansea,swansea
+fpl,Swansea,swansea
+espn,Swansea City,swansea
+football-data,Tottenham,tottenham
+fpl,Spurs,tottenham
+espn,Tottenham Hotspur,tottenham
+football-data,Watford,watford
+fpl,Watford,watford
+espn,Watford,watford
+football-data,West Brom,west-brom
+fpl,West Brom,west-brom
+espn,West Bromwich Albion,west-brom
+football-data,West Ham,west-ham
+fpl,West Ham,west-ham
+espn,West Ham United,west-ham
+football-data,Wigan,wigan
+fpl,Wigan,wigan
+espn,Wigan Athletic,wigan
+football-data,Wolves,wolves
+fpl,Wolves,wolves
+espn,Wolverhampton Wanderers,wolves
+football-data,Barnsley,barnsley
+espn,Barnsley,barnsley
+football-data,Bristol City,bristol-city
+espn,Bristol City,bristol-city
+football-data,Burton,burton-albion
+espn,Burton Albion,burton-albion
+football-data,Colchester,colchester-united
+espn,Colchester United,colchester-united
+football-data,Crewe,crewe-alexandra
+espn,Crewe Alexandra,crewe-alexandra
+football-data,Doncaster,doncaster-rovers
+espn,Doncaster Rovers,doncaster-rovers
+football-data,Gillingham,gillingham
+espn,Gillingham,gillingham
+football-data,Lincoln,lincoln-city
+espn,Lincoln City,lincoln-city
+football-data,Millwall,millwall
+espn,Millwall,millwall
+football-data,Milton Keynes Dons,mk-dons
+espn,MK Dons,mk-dons
+football-data,Oxford,oxford-united
+espn,Oxford United,oxford-united
+football-data,Peterboro,peterborough-united
+espn,Peterborough United,peterborough-united
+football-data,Plymouth,plymouth-argyle
+espn,Plymouth Argyle,plymouth-argyle
+football-data,Preston,preston-north-end
+espn,Preston North End,preston-north-end
+football-data,Rotherham,rotherham-united
+espn,Rotherham United,rotherham-united
+football-data,Scunthorpe,scunthorpe-united
+espn,Scunthorpe United,scunthorpe-united
+football-data,Sheffield Weds,sheffield-wednesday
+espn,Sheffield Wednesday,sheffield-wednesday
+football-data,Southend,southend-united
+espn,Southend United,southend-united
+football-data,Wrexham,wrexham
+espn,Wrexham,wrexham
+football-data,Wycombe,wycombe-wanderers
+espn,Wycombe Wanderers,wycombe-wanderers
+football-data,Yeovil,yeovil-town
+espn,Yeovil Town,yeovil-town

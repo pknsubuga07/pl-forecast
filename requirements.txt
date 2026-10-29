@@ -1,0 +1,8 @@
+# Exact pins: saved models are pickled scikit-learn objects, so the library versions that
+# train and load them must match (each model manifest records the versions it was built with).
+pandas==3.1.0
+numpy==2.5.4
+scipy==1.18.1
+scikit-learn==1.9.1
+requests==2.34.2
+pytest==9.2.0
