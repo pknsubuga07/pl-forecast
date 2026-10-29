@@ -1,0 +1,45 @@
+{
+  "elo": {
+    "k": 10,
+    "home_adv": 95,
+    "season_regression": 0.05,
+    "init_e0": 1550.0,
+    "init_e1": 1400.0
+  },
+  "dc": {
+    "xi": 0.0028,
+    "window_days": 1095,
+    "ridge": 1.5,
+    "promoted_attack": -0.2,
+    "promoted_defence": -0.2,
+    "sot_weight": 0.3
+  },
+  "gbm": {
+    "learning_rate": 0.05,
+    "max_iter": 300,
+    "max_depth": 1,
+    "min_samples_leaf": 100,
+    "l2_regularization": 1.0
+  },
+  "logreg_c": 0.003,
+  "ensemble_weights": {
+    "dc": 0.5,
+    "gbm": 0.5,
+    "logreg": 0.0,
+    "elo": 0.0
+  },
+  "validation_seasons": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020
+  ],
+  "test_seasons": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ]
+}
