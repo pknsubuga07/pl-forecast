@@ -88,7 +88,7 @@ on target instead, and the dashboard shows real xG for 2026-27 from football-dat
 
 ## Running it locally
 
-Requirements: Python 3.12+ and Node 20+ (developed on Python 3.14 and Node 26). No API keys are
+Requirements: Python 3.14 (CI uses the same version, because saved models are pickled) and Node 20+. No API keys are
 needed.
 
 ```bash
