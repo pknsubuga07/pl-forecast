@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+/* Theme is a data-theme attribute set before first paint (see app/layout.tsx). */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  color-scheme: light;
+  --bg: #f6f6f4;
+  --surface: #ffffff;
+  --surface-2: #f0efec;
+  --border: #e4e3df;
+  --text: #0b0b0b;
+  --text-2: #52514e;
+  --muted: #6f6e68;
+  --accent: #6250d6;
+  /* Outcome encoding: home and away are the two poles, a draw is the neutral midpoint. */
+  --home: #2a78d6;
+  --draw: #a3a29b;
+  --away: #eb6834;
+  --win: #0ca30c;
+  --loss: #d03b3b;
+  --warn: #b07a00;
+  --grid: #e9e8e4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #111110;
+    --surface: #1a1a19;
+    --surface-2: #242422;
+    --border: #30302d;
+    --text: #f0efec;
+    --text-2: #c3c2b7;
+    --muted: #9a998f;
+    --accent: #9085e9;
+    --home: #3987e5;
+    --draw: #75746c;
+    --away: #d95926;
+    --win: #2fb52f;
+    --loss: #e66767;
+    --warn: #fab219;
+    --grid: #2a2a27;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #111110;
+  --surface: #1a1a19;
+  --surface-2: #242422;
+  --border: #30302d;
+  --text: #f0efec;
+  --text-2: #c3c2b7;
+  --muted: #9a998f;
+  --accent: #9085e9;
+  --home: #3987e5;
+  --draw: #75746c;
+  --away: #d95926;
+  --win: #2fb52f;
+  --loss: #e66767;
+  --warn: #fab219;
+  --grid: #2a2a27;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--border);
+  --color-ink: var(--text);
+  --color-ink-2: var(--text-2);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-home: var(--home);
+  --color-draw: var(--draw);
+  --color-away: var(--away);
+  --color-win: var(--win);
+  --color-loss: var(--loss);
+  --color-warn: var(--warn);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
