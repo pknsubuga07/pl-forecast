@@ -1,0 +1,95 @@
+name: Update data and predictions
+
+on:
+  schedule:
+    - cron: "17 */3 * * *"       # every 3 hours, every day
+    - cron: "47 10-20 * * 0,6"   # extra hourly runs on Saturday/Sunday match days (UTC)
+    - cron: "5 6 * * 2"          # weekly retrain, Tuesday 06:05 UTC (after the weekend + Monday games)
+  workflow_dispatch:
+    inputs:
+      retrain:
+        description: "Refit the production model"
+        type: boolean
+        default: false
+      evaluate:
+        description: "Re-run the full walk-forward evaluation first (slow, ~10 min)"
+        type: boolean
+        default: false
+
+# Never run two pipeline jobs at once (they would race on the ledger).
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Restore downloaded sources and database
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            data/raw
+            data/epl.sqlite
+          key: epl-data-${{ github.run_id }}
+          restore-keys: epl-data-
+
+      - run: pip install -r requirements.txt
+
+      - name: Run pipeline
+        env:
+          EVENT_SCHEDULE: ${{ github.event.schedule }}
+          INPUT_RETRAIN: ${{ inputs.retrain }}
+          INPUT_EVALUATE: ${{ inputs.evaluate }}
+        run: |
+          ARGS=""
+          if [ "$EVENT_SCHEDULE" = "5 6 * * 2" ] || [ "$INPUT_RETRAIN" = "true" ]; then ARGS="--retrain"; fi
+          if [ "$INPUT_EVALUATE" = "true" ]; then
+            python -m pipeline update --skip-espn   # make sure the database is populated
+            python -m model.evaluate
+            ARGS="--retrain"
+          fi
+          python -m pipeline update $ARGS
+
+      - name: Tests must pass before anything is published
+        run: python -m pytest -q
+
+      - name: Save sources and database for the next run
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            data/raw
+            data/epl.sqlite
+          key: epl-data-${{ github.run_id }}
+
+      - name: Commit updated predictions and dashboard data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/ledger web/public/data model/artifacts docs/evaluation.md
+          if git diff --cached --quiet; then
+            echo "Nothing changed."
+            exit 0
+          fi
+          # If only the "last updated" timestamp moved, commit at most every 12 hours.
+          if ! git diff --cached --name-only | grep -qv '^web/public/data/meta.json$'; then
+            last=$(git log -1 --format=%ct -- web/public/data || echo 0)
+            if [ $(( $(date +%s) - ${last:-0} )) -lt 43200 ]; then
+              echo "Only the timestamp changed; skipping commit."
+              exit 0
+            fi
+          fi
+          git commit -m "data: pipeline update $(date -u +%Y-%m-%dT%H:%MZ)"
+          git pull --rebase --autostash
+          git push
