@@ -1,0 +1,63 @@
+sport,team_id,name,short_name,nickname,conference,division,espn_id,logo
+nfl,nfl-ari,Arizona Cardinals,ARI,Cardinals,NFC,NFC West,22,https://a.espncdn.com/i/teamlogos/nfl/500/ari.png
+nfl,nfl-atl,Atlanta Falcons,ATL,Falcons,NFC,NFC South,1,https://a.espncdn.com/i/teamlogos/nfl/500/atl.png
+nfl,nfl-bal,Baltimore Ravens,BAL,Ravens,AFC,AFC North,33,https://a.espncdn.com/i/teamlogos/nfl/500/bal.png
+nfl,nfl-buf,Buffalo Bills,BUF,Bills,AFC,AFC East,2,https://a.espncdn.com/i/teamlogos/nfl/500/buf.png
+nfl,nfl-car,Carolina Panthers,CAR,Panthers,NFC,NFC South,29,https://a.espncdn.com/i/teamlogos/nfl/500/car.png
+nfl,nfl-chi,Chicago Bears,CHI,Bears,NFC,NFC North,3,https://a.espncdn.com/i/teamlogos/nfl/500/chi.png
+nfl,nfl-cin,Cincinnati Bengals,CIN,Bengals,AFC,AFC North,4,https://a.espncdn.com/i/teamlogos/nfl/500/cin.png
+nfl,nfl-cle,Cleveland Browns,CLE,Browns,AFC,AFC North,5,https://a.espncdn.com/i/teamlogos/nfl/500/cle.png
+nfl,nfl-dal,Dallas Cowboys,DAL,Cowboys,NFC,NFC East,6,https://a.espncdn.com/i/teamlogos/nfl/500/dal.png
+nfl,nfl-den,Denver Broncos,DEN,Broncos,AFC,AFC West,7,https://a.espncdn.com/i/teamlogos/nfl/500/den.png
+nfl,nfl-det,Detroit Lions,DET,Lions,NFC,NFC North,8,https://a.espncdn.com/i/teamlogos/nfl/500/det.png
+nfl,nfl-gb,Green Bay Packers,GB,Packers,NFC,NFC North,9,https://a.espncdn.com/i/teamlogos/nfl/500/gb.png
+nfl,nfl-hou,Houston Texans,HOU,Texans,AFC,AFC South,34,https://a.espncdn.com/i/teamlogos/nfl/500/hou.png
+nfl,nfl-ind,Indianapolis Colts,IND,Colts,AFC,AFC South,11,https://a.espncdn.com/i/teamlogos/nfl/500/ind.png
+nfl,nfl-jax,Jacksonville Jaguars,JAX,Jaguars,AFC,AFC South,30,https://a.espncdn.com/i/teamlogos/nfl/500/jax.png
+nfl,nfl-kc,Kansas City Chiefs,KC,Chiefs,AFC,AFC West,12,https://a.espncdn.com/i/teamlogos/nfl/500/kc.png
+nfl,nfl-lv,Las Vegas Raiders,LV,Raiders,AFC,AFC West,13,https://a.espncdn.com/i/teamlogos/nfl/500/lv.png
+nfl,nfl-lac,Los Angeles Chargers,LAC,Chargers,AFC,AFC West,24,https://a.espncdn.com/i/teamlogos/nfl/500/lac.png
+nfl,nfl-lar,Los Angeles Rams,LAR,Rams,NFC,NFC West,14,https://a.espncdn.com/i/teamlogos/nfl/500/lar.png
+nfl,nfl-mia,Miami Dolphins,MIA,Dolphins,AFC,AFC East,15,https://a.espncdn.com/i/teamlogos/nfl/500/mia.png
+nfl,nfl-min,Minnesota Vikings,MIN,Vikings,NFC,NFC North,16,https://a.espncdn.com/i/teamlogos/nfl/500/min.png
+nfl,nfl-ne,New England Patriots,NE,Patriots,AFC,AFC East,17,https://a.espncdn.com/i/teamlogos/nfl/500/ne.png
+nfl,nfl-no,New Orleans Saints,NO,Saints,NFC,NFC South,18,https://a.espncdn.com/i/teamlogos/nfl/500/no.png
+nfl,nfl-nyg,New York Giants,NYG,Giants,NFC,NFC East,19,https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png
+nfl,nfl-nyj,New York Jets,NYJ,Jets,AFC,AFC East,20,https://a.espncdn.com/i/teamlogos/nfl/500/nyj.png
+nfl,nfl-phi,Philadelphia Eagles,PHI,Eagles,NFC,NFC East,21,https://a.espncdn.com/i/teamlogos/nfl/500/phi.png
+nfl,nfl-pit,Pittsburgh Steelers,PIT,Steelers,AFC,AFC North,23,https://a.espncdn.com/i/teamlogos/nfl/500/pit.png
+nfl,nfl-sf,San Francisco 49ers,SF,49ers,NFC,NFC West,25,https://a.espncdn.com/i/teamlogos/nfl/500/sf.png
+nfl,nfl-sea,Seattle Seahawks,SEA,Seahawks,NFC,NFC West,26,https://a.espncdn.com/i/teamlogos/nfl/500/sea.png
+nfl,nfl-tb,Tampa Bay Buccaneers,TB,Buccaneers,NFC,NFC South,27,https://a.espncdn.com/i/teamlogos/nfl/500/tb.png
+nfl,nfl-ten,Tennessee Titans,TEN,Titans,AFC,AFC South,10,https://a.espncdn.com/i/teamlogos/nfl/500/ten.png
+nfl,nfl-wsh,Washington Commanders,WSH,Commanders,NFC,NFC East,28,https://a.espncdn.com/i/teamlogos/nfl/500/wsh.png
+nba,nba-atl,Atlanta Hawks,ATL,Hawks,East,Southeast,1,https://a.espncdn.com/i/teamlogos/nba/500/atl.png
+nba,nba-bos,Boston Celtics,BOS,Celtics,East,Atlantic,2,https://a.espncdn.com/i/teamlogos/nba/500/bos.png
+nba,nba-bkn,Brooklyn Nets,BKN,Nets,East,Atlantic,17,https://a.espncdn.com/i/teamlogos/nba/500/bkn.png
+nba,nba-cha,Charlotte Hornets,CHA,Hornets,East,Southeast,30,https://a.espncdn.com/i/teamlogos/nba/500/cha.png
+nba,nba-chi,Chicago Bulls,CHI,Bulls,East,Central,4,https://a.espncdn.com/i/teamlogos/nba/500/chi.png
+nba,nba-cle,Cleveland Cavaliers,CLE,Cavaliers,East,Central,5,https://a.espncdn.com/i/teamlogos/nba/500/cle.png
+nba,nba-dal,Dallas Mavericks,DAL,Mavericks,West,Southwest,6,https://a.espncdn.com/i/teamlogos/nba/500/dal.png
+nba,nba-den,Denver Nuggets,DEN,Nuggets,West,Northwest,7,https://a.espncdn.com/i/teamlogos/nba/500/den.png
+nba,nba-det,Detroit Pistons,DET,Pistons,East,Central,8,https://a.espncdn.com/i/teamlogos/nba/500/det.png
+nba,nba-gs,Golden State Warriors,GS,Warriors,West,Pacific,9,https://a.espncdn.com/i/teamlogos/nba/500/gs.png
+nba,nba-hou,Houston Rockets,HOU,Rockets,West,Southwest,10,https://a.espncdn.com/i/teamlogos/nba/500/hou.png
+nba,nba-ind,Indiana Pacers,IND,Pacers,East,Central,11,https://a.espncdn.com/i/teamlogos/nba/500/ind.png
+nba,nba-lac,LA Clippers,LAC,Clippers,West,Pacific,12,https://a.espncdn.com/i/teamlogos/nba/500/lac.png
+nba,nba-lal,Los Angeles Lakers,LAL,Lakers,West,Pacific,13,https://a.espncdn.com/i/teamlogos/nba/500/lal.png
+nba,nba-mem,Memphis Grizzlies,MEM,Grizzlies,West,Southwest,29,https://a.espncdn.com/i/teamlogos/nba/500/mem.png
+nba,nba-mia,Miami Heat,MIA,Heat,East,Southeast,14,https://a.espncdn.com/i/teamlogos/nba/500/mia.png
+nba,nba-mil,Milwaukee Bucks,MIL,Bucks,East,Central,15,https://a.espncdn.com/i/teamlogos/nba/500/mil.png
+nba,nba-min,Minnesota Timberwolves,MIN,Timberwolves,West,Northwest,16,https://a.espncdn.com/i/teamlogos/nba/500/min.png
+nba,nba-no,New Orleans Pelicans,NO,Pelicans,West,Southwest,3,https://a.espncdn.com/i/teamlogos/nba/500/no.png
+nba,nba-ny,New York Knicks,NY,Knicks,East,Atlantic,18,https://a.espncdn.com/i/teamlogos/nba/500/ny.png
+nba,nba-okc,Oklahoma City Thunder,OKC,Thunder,West,Northwest,25,https://a.espncdn.com/i/teamlogos/nba/500/okc.png
+nba,nba-orl,Orlando Magic,ORL,Magic,East,Southeast,19,https://a.espncdn.com/i/teamlogos/nba/500/orl.png
+nba,nba-phi,Philadelphia 76ers,PHI,76ers,East,Atlantic,20,https://a.espncdn.com/i/teamlogos/nba/500/phi.png
+nba,nba-phx,Phoenix Suns,PHX,Suns,West,Pacific,21,https://a.espncdn.com/i/teamlogos/nba/500/phx.png
+nba,nba-por,Portland Trail Blazers,POR,Trail Blazers,West,Northwest,22,https://a.espncdn.com/i/teamlogos/nba/500/por.png
+nba,nba-sac,Sacramento Kings,SAC,Kings,West,Pacific,23,https://a.espncdn.com/i/teamlogos/nba/500/sac.png
+nba,nba-sa,San Antonio Spurs,SA,Spurs,West,Southwest,24,https://a.espncdn.com/i/teamlogos/nba/500/sa.png
+nba,nba-tor,Toronto Raptors,TOR,Raptors,East,Atlantic,28,https://a.espncdn.com/i/teamlogos/nba/500/tor.png
+nba,nba-utah,Utah Jazz,UTAH,Jazz,West,Northwest,26,https://a.espncdn.com/i/teamlogos/nba/500/utah.png
+nba,nba-wsh,Washington Wizards,WSH,Wizards,East,Southeast,27,https://a.espncdn.com/i/teamlogos/nba/500/wsh.png

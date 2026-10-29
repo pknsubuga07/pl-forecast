@@ -142,3 +142,37 @@ export function RunningLossChart({ data }: { data: { n: number; model: number; m
     </div>
   );
 }
+
+export function MarginChart({ data }: { data: { date: string; opponent: string; venue: string; pf: number; pa: number; result: string; margin5: number }[] }) {
+  const rows = data.map((d) => ({ ...d, label: `${d.date} ${d.venue === "H" ? "v" : "@"} ${d.opponent} ${d.pf}–${d.pa}` }));
+  const lim = Math.max(5, ...rows.map((r) => Math.abs(r.margin5))) * 1.1;
+  return (
+    <div className="h-56 w-full">
+      <ResponsiveContainer>
+        <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 0, left: 0 }}>
+          <CartesianGrid {...GRID} />
+          <XAxis dataKey="date" {...AXIS} minTickGap={40} tickFormatter={(d: string) => d.slice(5)} />
+          <YAxis domain={[-lim, lim]} {...AXIS} width={36} tickFormatter={(v: number) => v.toFixed(0)} />
+          <ReferenceLine y={0} stroke="var(--muted)" strokeDasharray="4 4" />
+          <Tooltip cursor={{ stroke: "var(--muted)", strokeWidth: 1 }}
+            content={({ active, payload }) => {
+              if (!active || !payload?.length) return null;
+              const d = payload[0].payload as (typeof rows)[number];
+              return (
+                <div className="rounded-lg border border-line bg-surface px-3 py-2 text-xs shadow-lg">
+                  <div className="text-muted">{d.label}</div>
+                  <div><b className="tabular">{d.margin5 > 0 ? "+" : ""}{d.margin5.toFixed(1)}</b> <span className="text-ink-2">avg margin, last 5</span></div>
+                </div>
+              );
+            }} />
+          <Line isAnimationActive={false} type="monotone" dataKey="margin5" name="Rolling margin" stroke="var(--home)" strokeWidth={2}
+            dot={(props: { cx?: number; cy?: number; index?: number }) => {
+              const r = rows[props.index ?? 0]?.result;
+              const fill = r === "W" ? "var(--win)" : r === "L" ? "var(--loss)" : "var(--draw)";
+              return <circle key={props.index} cx={props.cx} cy={props.cy} r={4} fill={fill} stroke="var(--surface)" strokeWidth={2} />;
+            }} />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}

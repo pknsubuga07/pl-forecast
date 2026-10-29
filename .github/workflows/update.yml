@@ -4,6 +4,7 @@ on:
   schedule:
     - cron: "17 */3 * * *"       # every 3 hours, every day
     - cron: "47 10-20 * * 0,6"   # extra hourly runs on Saturday/Sunday match days (UTC)
+    - cron: "47 22,23,0,1 * * *" # hourly through the evening ET, when NBA tips off and NFL night games kick off
     - cron: "5 6 * * 2"          # weekly retrain, Tuesday 06:05 UTC (after the weekend + Monday games)
   workflow_dispatch:
     inputs:
@@ -47,7 +48,8 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - name: Run pipeline
+      - name: Run pipeline (Premier League, NBA, NFL)
+        id: pipeline
         env:
           EVENT_SCHEDULE: ${{ github.event.schedule }}
           INPUT_RETRAIN: ${{ inputs.retrain }}
@@ -57,10 +59,18 @@ jobs:
           if [ "$EVENT_SCHEDULE" = "5 6 * * 2" ] || [ "$INPUT_RETRAIN" = "true" ]; then ARGS="--retrain"; fi
           if [ "$INPUT_EVALUATE" = "true" ]; then
             python -m pipeline update --skip-espn   # make sure the database is populated
+            python -m pipeline backfill-nba-odds
             python -m model.evaluate
+            python -m model.us_evaluate nfl
+            python -m model.us_evaluate nba
             ARGS="--retrain"
           fi
+          set +e
           python -m pipeline update $ARGS
+          code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          # 1 = every sport failed: publish nothing. 2 = some failed: publish the rest, fail at the end.
+          if [ $code -eq 1 ]; then exit 1; fi
 
       - name: Tests must pass before anything is published
         run: python -m pytest -q
@@ -77,7 +87,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/ledger web/public/data model/artifacts docs/evaluation.md
+          git add data/ledger web/public/data model/artifacts docs/evaluation*.md
           if git diff --cached --quiet; then
             echo "Nothing changed."
             exit 0
@@ -93,3 +103,9 @@ jobs:
           git commit -m "data: pipeline update $(date -u +%Y-%m-%dT%H:%MZ)"
           git pull --rebase --autostash
           git push
+
+      - name: Report sports that failed
+        if: steps.pipeline.outputs.code == '2'
+        run: |
+          echo "::error::At least one sport failed to update; its dashboard keeps the last good data. See the 'Run pipeline' log."
+          exit 1

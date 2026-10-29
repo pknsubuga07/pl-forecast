@@ -14,6 +14,8 @@ from .db import upsert
 
 log = logging.getLogger(__name__)
 TEAMS_CSV = DATA_DIR / "teams.csv"
+US_TEAMS_CSV = DATA_DIR / "us_teams.csv"
+US_SOURCES = ("nflverse", "espn-nfl", "espn-nba")  # exact-match only; never loose-matched
 
 
 class UnknownTeamError(KeyError):
@@ -40,10 +42,12 @@ class TeamMapper:
         self.aliases = aliases
         self.names = names  # team_id -> display name
         self._loose: dict[str, str] = {}
-        for (_, alias), tid in aliases.items():
-            self._loose.setdefault(normalise_name(alias), tid)
+        for (source, alias), tid in aliases.items():
+            if source not in US_SOURCES:
+                self._loose.setdefault(normalise_name(alias), tid)
         for tid, name in names.items():
-            self._loose.setdefault(normalise_name(name), tid)
+            if not tid.startswith(("nba-", "nfl-")):
+                self._loose.setdefault(normalise_name(name), tid)
         self.new_teams: list[dict] = []
 
     @classmethod
@@ -52,6 +56,9 @@ class TeamMapper:
             aliases = {(r["source"], r["alias"]): r["team_id"] for r in csv.DictReader(f)}
         with open(teams_csv, newline="") as f:
             names = {r["team_id"]: r["name"] for r in csv.DictReader(f)}
+        if US_TEAMS_CSV.exists():
+            with open(US_TEAMS_CSV, newline="") as f:
+                names.update({r["team_id"]: r["name"] for r in csv.DictReader(f)})
         unknown = {t for t in aliases.values() if t not in names}
         if unknown:
             raise ValueError(f"team_aliases.csv references unknown team ids: {sorted(unknown)}")
@@ -67,6 +74,8 @@ class TeamMapper:
         tid = self.aliases.get((source, alias))
         if tid:
             return tid
+        if source in US_SOURCES:
+            raise UnknownTeamError(f"Unmapped {source} team {alias!r}. Add a row to data/team_aliases.csv.")
         tid = self._loose.get(normalise_name(alias))
         if tid:
             self.aliases[(source, alias)] = tid
@@ -91,5 +100,5 @@ class TeamMapper:
             t["stadium"] = t.get("stadium") or None
         upsert(conn, "teams", teams + self.new_teams, key=("team_id",))
         upsert(conn, "team_aliases",
-               [{"source": s, "alias": a, "team_id": t} for (s, a), t in self.aliases.items()],
+               [{"source": s, "alias": a, "team_id": t} for (s, a), t in self.aliases.items() if s not in US_SOURCES],
                key=("source", "alias"), keep_existing_when_null=False)

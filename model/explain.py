@@ -12,6 +12,11 @@ import pandas as pd
 
 from .learners import Ensemble
 
+def poss(name: str) -> str:
+    """English possessive: "Arsenal's", "Green Bay Packers'"."""
+    return f"{name}'" if name.endswith("s") else f"{name}'s"
+
+
 GROUPS = {
     "ratings": ["elo_home", "elo_away", "elo_diff", "dc_lambda", "dc_mu", "dc_ph", "dc_pd", "dc_pa"],
     "recent_form": ["form5_ppg_h", "form5_ppg_a", "gd10_h", "gd10_a"],
@@ -75,23 +80,23 @@ def phrase(group: str, favours_home: bool, r: pd.Series, home: str, away: str) -
     if group == "ratings":
         mine, theirs = (r["elo_home"], r["elo_away"]) if favours_home else (r["elo_away"], r["elo_home"])
         if mine > theirs:
-            return f"{team}'s higher strength rating (Elo {mine:.0f} vs {theirs:.0f})"
+            return f"{poss(team)} higher strength rating (Elo {mine:.0f} vs {theirs:.0f})"
         g_mine, g_theirs = (r["dc_lambda"], r["dc_mu"]) if favours_home else (r["dc_mu"], r["dc_lambda"])
-        return f"{team}'s attack and defence ratings in the goals model ({g_mine:.2f} vs {g_theirs:.2f} expected goals)"
+        return f"{poss(team)} attack and defence ratings in the goals model ({g_mine:.2f} vs {g_theirs:.2f} expected goals)"
     if group == "recent_form":
-        return f"{team}'s better recent form ({_f(r[f'form5_ppg_{s}'])} vs {_f(r[f'form5_ppg_{o}'])} points per game over the last 5)"
+        return f"{poss(team)} better recent form ({_f(r[f'form5_ppg_{s}'])} vs {_f(r[f'form5_ppg_{o}'])} points per game over the last 5)"
     if group == "shots":
-        return (f"{team}'s stronger shot numbers (shots-on-target difference {_f(r[f'sotd10_{s}'], '{:+.1f}')} "
+        return (f"{poss(team)} stronger shot numbers (shots-on-target difference {_f(r[f'sotd10_{s}'], '{:+.1f}')} "
                 f"vs {_f(r[f'sotd10_{o}'], '{:+.1f}')} per game over the last 10)")
     if group == "venue_form":
-        lead = f"{home}'s home record" if favours_home else f"{away}'s away record"
+        lead = f"{poss(home)} home record" if favours_home else f"{poss(away)} away record"
         return (f"{lead} ({home} {_f(r['venue_ppg_h'])} points per game in recent home matches, "
                 f"{away} {_f(r['venue_ppg_a'])} in recent away matches)")
     if group == "table":
         ph, pa = r.get(f"pos_{s}"), r.get(f"pos_{o}")
         if ph is not None and not np.isnan(ph) and pa is not None and not np.isnan(pa):
-            return f"{team}'s league position ({_ordinal(ph)} vs {_ordinal(pa)})"
-        return f"{team}'s points per game this season"
+            return f"{poss(team)} league position ({_ordinal(ph)} vs {_ordinal(pa)})"
+        return f"{poss(team)} points per game this season"
     if group == "rest":
         if r[f"euro_{o}"] == 1 and r[f"euro_{s}"] == 0:
             return f"{other} playing in Europe a few days earlier"

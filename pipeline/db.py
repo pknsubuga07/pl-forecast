@@ -92,6 +92,49 @@ CREATE TABLE IF NOT EXISTS predictions (
     PRIMARY KEY (match_id, mode)
 );
 
+-- NBA and NFL. team_aliases above maps nflverse / ESPN spellings to these ids too.
+CREATE TABLE IF NOT EXISTS us_teams (
+    team_id    TEXT PRIMARY KEY,            -- 'nba-bos', 'nfl-kc'
+    sport      TEXT NOT NULL,               -- 'nba' | 'nfl'
+    name       TEXT NOT NULL,
+    short_name TEXT NOT NULL,
+    nickname   TEXT,
+    conference TEXT,
+    division   TEXT,
+    espn_id    TEXT,
+    logo       TEXT
+);
+
+CREATE TABLE IF NOT EXISTS us_games (
+    game_id      TEXT PRIMARY KEY,          -- 'nfl-2026_08_KC_DEN', 'nba-401909277'
+    sport        TEXT NOT NULL,
+    season       INTEGER NOT NULL,          -- start year: 2026 = NFL 2026 / NBA 2026-27
+    season_type  TEXT NOT NULL,             -- REG | POST
+    week         INTEGER,                   -- NFL week
+    kickoff_utc  TEXT,
+    home_id      TEXT NOT NULL REFERENCES us_teams(team_id),
+    away_id      TEXT NOT NULL REFERENCES us_teams(team_id),
+    neutral      INTEGER NOT NULL DEFAULT 0,
+    status       TEXT NOT NULL,             -- SCHEDULED | IN_PLAY | FINISHED | POSTPONED
+    home_score INTEGER, away_score INTEGER,
+    overtime     INTEGER,
+    venue        TEXT,
+    home_qb TEXT, away_qb TEXT,             -- NFL starting quarterbacks (nflverse)
+    espn_id      TEXT,
+    updated_at   TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_us_games ON us_games(sport, kickoff_utc);
+
+CREATE TABLE IF NOT EXISTS us_odds (
+    game_id     TEXT NOT NULL REFERENCES us_games(game_id),
+    source      TEXT NOT NULL,              -- 'nflverse' | 'espn' | provider name
+    home_ml REAL, away_ml REAL,             -- American moneylines
+    home_spread REAL,                       -- points, negative = home favoured
+    total REAL,
+    fetched_at  TEXT NOT NULL,
+    PRIMARY KEY (game_id, source)
+);
+
 CREATE TABLE IF NOT EXISTS pipeline_runs (
     run_id      INTEGER PRIMARY KEY AUTOINCREMENT,
     started_at  TEXT NOT NULL,

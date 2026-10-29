@@ -52,47 +52,76 @@ def mirror_tables(conn, fs, ledger_rows: dict) -> None:
                keep_existing_when_null=False)
 
 
-def cmd_update(args) -> int:
+def update_pl(conn, args, now: pd.Timestamp) -> dict:
     from model import ledger, train
     from model.predict import predict_upcoming
 
     from .export import export_all
 
+    stats = ingest.run_ingest(conn, refresh_all=args.refresh_all, skip_espn=args.skip_espn)
+    if not args.skip_espn and conn.execute("SELECT COUNT(*) FROM other_matches").fetchone()[0] < 1000:
+        log.info("Fresh database: backfilling historical cup/European fixtures from ESPN")
+        cmd_backfill(argparse.Namespace(start=2005))
+    log.info("Ingest: %s", json.dumps(stats))
+    if args.retrain or not (ARTIFACTS_DIR / "LATEST").exists():
+        stats["trained"] = train.train(conn)
+    preds, fs, manifest = predict_upcoming(conn, now=now, gameweeks=args.gameweeks)
+    state = {r["match_id"]: {"kickoff_utc": r["kickoff_utc"], "status": r["status"]}
+             for r in conn.execute("SELECT match_id, kickoff_utc, status FROM matches WHERE div='E0'")}
+    led = ledger.read()
+    stats["ledger"] = ledger.update(led, preds, state, now.to_pydatetime())
+    ledger.write(led)
+    mirror_tables(conn, fs, led)
+    log.info("Ledger: %s", stats["ledger"])
+    evaluation = json.loads((ARTIFACTS_DIR / "evaluation.json").read_text()) if (ARTIFACTS_DIR / "evaluation.json").exists() else None
+    export_all(conn, preds, fs, manifest, evaluation, {"finished_at": _now_iso(), "stats": stats})
+    return stats
+
+
+def update_us(conn, sport: str, args, now: pd.Timestamp) -> dict:
+    from model import ledger, us_predict
+
+    from . import us_export, us_ingest
+
+    stats = us_ingest.run_us_ingest(conn, sport, refresh_all=args.refresh_all)
+    if args.retrain or not (ARTIFACTS_DIR / sport / "LATEST").exists():
+        stats["trained"] = us_predict.train(conn, sport)
+    preds, fs, manifest = us_predict.predict_upcoming(conn, sport, now=now)
+    state = {r["game_id"]: {"kickoff_utc": r["kickoff_utc"], "status": r["status"]}
+             for r in conn.execute("SELECT game_id, kickoff_utc, status FROM us_games WHERE sport=?", (sport,))}
+    path = us_export.ledger_path(sport)
+    led = ledger.read(path, key="game_id")
+    stats["ledger"] = ledger.update(led, preds, state, now.to_pydatetime(), columns=us_export.LEDGER_COLUMNS)
+    ledger.write(led, path, us_export.LEDGER_COLUMNS)
+    log.info("%s ledger: %s", sport, stats["ledger"])
+    us_export.export_sport(conn, sport, preds, fs, manifest, {"finished_at": _now_iso()})
+    return stats
+
+
+SPORTS = {"pl": update_pl, "nba": lambda c, a, n: update_us(c, "nba", a, n), "nfl": lambda c, a, n: update_us(c, "nfl", a, n)}
+
+
+def cmd_update(args) -> int:
+    """Each sport runs independently: a failing source only stops that sport, and its last good
+    dashboard data stays in place. Exit 0 = all ok, 2 = some sports failed, 1 = all failed."""
     conn = db.connect()
-    started = _now_iso()
     with transaction(conn):
-        run_id = conn.execute("INSERT INTO pipeline_runs (started_at, status) VALUES (?, 'running')", (started,)).lastrowid
-    try:
-        stats = ingest.run_ingest(conn, refresh_all=args.refresh_all, skip_espn=args.skip_espn)
-        if not args.skip_espn and conn.execute("SELECT COUNT(*) FROM other_matches").fetchone()[0] < 1000:
-            log.info("Fresh database: backfilling historical cup/European fixtures from ESPN")
-            cmd_backfill(argparse.Namespace(start=2005))
-        log.info("Ingest: %s", json.dumps(stats))
-        if args.retrain or not (ARTIFACTS_DIR / "LATEST").exists():
-            stats["trained"] = train.train(conn)
-        now = pd.Timestamp.now(tz="UTC")
-        preds, fs, manifest = predict_upcoming(conn, now=now, gameweeks=args.gameweeks)
-        state = {r["match_id"]: {"kickoff_utc": r["kickoff_utc"], "status": r["status"]}
-                 for r in conn.execute("SELECT match_id, kickoff_utc, status FROM matches WHERE div='E0'")}
-        led = ledger.read()
-        stats["ledger"] = ledger.update(led, preds, state, now.to_pydatetime())
-        ledger.write(led)
-        mirror_tables(conn, fs, led)
-        log.info("Ledger: %s", stats["ledger"])
-        evaluation = json.loads((ARTIFACTS_DIR / "evaluation.json").read_text()) if (ARTIFACTS_DIR / "evaluation.json").exists() else None
-        finished = _now_iso()
-        export_all(conn, preds, fs, manifest, evaluation, {"finished_at": finished, "stats": stats})
-        with transaction(conn):
-            conn.execute("UPDATE pipeline_runs SET finished_at=?, status='ok', message=? WHERE run_id=?",
-                         (finished, json.dumps(stats, default=str)[:2000], run_id))
-        print(json.dumps(stats, indent=1, default=str))
-        return 0
-    except Exception as exc:  # noqa: BLE001
-        log.exception("Pipeline failed")
-        with transaction(conn):
-            conn.execute("UPDATE pipeline_runs SET finished_at=?, status='failed', message=? WHERE run_id=?",
-                         (_now_iso(), f"{type(exc).__name__}: {exc}"[:2000], run_id))
-        return 1
+        run_id = conn.execute("INSERT INTO pipeline_runs (started_at, status) VALUES (?, 'running')", (_now_iso(),)).lastrowid
+    now = pd.Timestamp.now(tz="UTC")
+    results, failed = {}, []
+    for sport in args.sports:
+        try:
+            results[sport] = SPORTS[sport](conn, args, now)
+        except Exception as exc:  # noqa: BLE001
+            log.exception("%s update failed", sport)
+            failed.append(sport)
+            results[sport] = {"error": f"{type(exc).__name__}: {exc}"}
+    status = "ok" if not failed else "failed" if len(failed) == len(args.sports) else "partial"
+    with transaction(conn):
+        conn.execute("UPDATE pipeline_runs SET finished_at=?, status=?, message=? WHERE run_id=?",
+                     (_now_iso(), status, json.dumps(results, default=str)[:2000], run_id))
+    print(json.dumps(results, indent=1, default=str))
+    return 0 if status == "ok" else 2 if status == "partial" else 1
 
 
 def cmd_backfill(args) -> int:
@@ -106,6 +135,12 @@ def cmd_backfill(args) -> int:
     return 0
 
 
+def cmd_backfill_nba_odds(args) -> int:
+    from .us_ingest import backfill_nba_odds
+    print(f"NBA odds rows: {backfill_nba_odds(db.connect(), range(args.start, current_season() + 1))}")
+    return 0
+
+
 def cmd_bootstrap(args) -> int:
     from model import evaluate, train
     conn = db.connect()
@@ -114,7 +149,17 @@ def cmd_bootstrap(args) -> int:
     if not (ARTIFACTS_DIR / "hyperparams.json").exists() or args.evaluate:
         evaluate.evaluate(conn)
     train.train(conn)
-    return cmd_update(argparse.Namespace(retrain=False, skip_espn=False, refresh_all=False, gameweeks=3))
+    for sport in ("nfl", "nba"):
+        from . import us_ingest
+        us_ingest.run_us_ingest(conn, sport)
+        if not (ARTIFACTS_DIR / sport / "hyperparams.json").exists() or args.evaluate:
+            from model import us_evaluate
+            if sport == "nba":
+                us_ingest.backfill_nba_odds(conn, range(2021, current_season() + 1))
+            us_evaluate.evaluate(conn, sport)
+        from model import us_predict
+        us_predict.train(conn, sport)
+    return cmd_update(argparse.Namespace(retrain=False, skip_espn=False, refresh_all=False, gameweeks=3, sports=list(SPORTS)))
 
 
 def main(argv=None) -> int:
@@ -128,10 +173,14 @@ def main(argv=None) -> int:
     u.add_argument("--skip-espn", action="store_true")
     u.add_argument("--refresh-all", action="store_true", help="re-download finished seasons too")
     u.add_argument("--gameweeks", type=int, default=3)
+    u.add_argument("--sports", nargs="+", choices=list(SPORTS), default=list(SPORTS))
     u.set_defaults(fn=cmd_update)
     b = sub.add_parser("backfill-espn", help="historical cup / European fixtures for rest days")
     b.add_argument("--start", type=int, default=2005)
     b.set_defaults(fn=cmd_backfill)
+    o = sub.add_parser("backfill-nba-odds", help="historical NBA odds from ESPN for the evaluation seasons")
+    o.add_argument("--start", type=int, default=2021)
+    o.set_defaults(fn=cmd_backfill_nba_odds)
     s = sub.add_parser("bootstrap", help="first full run: ingest, backfill, evaluate, train, update")
     s.add_argument("--evaluate", action="store_true", help="re-run the walk-forward evaluation")
     s.set_defaults(fn=cmd_bootstrap)

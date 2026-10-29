@@ -33,25 +33,27 @@ def _iso(dt: datetime) -> str:
     return dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def read(path: Path = LEDGER_PATH) -> dict[str, dict]:
+def read(path: Path = LEDGER_PATH, key: str = "match_id") -> dict[str, dict]:
     if not path.exists():
         return {}
     with open(path, newline="") as f:
-        return {r["match_id"]: r for r in csv.DictReader(f)}
+        return {r[key]: r for r in csv.DictReader(f)}
 
 
-def write(rows: dict[str, dict], path: Path = LEDGER_PATH) -> None:
+def write(rows: dict[str, dict], path: Path = LEDGER_PATH, columns: list[str] = COLUMNS) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(".tmp")
-    ordered = sorted(rows.values(), key=lambda r: (r.get("kickoff_utc") or "9999", r["match_id"]))
+    key = columns[0]
+    ordered = sorted(rows.values(), key=lambda r: (r.get("kickoff_utc") or "9999", r[key]))
     with open(tmp, "w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=COLUMNS, extrasaction="ignore")
+        w = csv.DictWriter(f, fieldnames=columns, extrasaction="ignore")
         w.writeheader()
         w.writerows(ordered)
     tmp.replace(path)
 
 
-def update(ledger: dict[str, dict], predictions: list[dict], match_state: dict[str, dict], now: datetime) -> dict:
+def update(ledger: dict[str, dict], predictions: list[dict], match_state: dict[str, dict], now: datetime,
+           columns: list[str] = COLUMNS) -> dict:
     """Lock rows whose match has started, then upsert fresh pre-kickoff predictions.
 
     match_state: match_id -> {"kickoff_utc": str | None, "status": str}
@@ -68,8 +70,9 @@ def update(ledger: dict[str, dict], predictions: list[dict], match_state: dict[s
             row["locked"] = "1"
             row["locked_at"] = _iso(now)
             stats["locked"] += 1
+    key = columns[0]
     for p in predictions:
-        mid = p["match_id"]
+        mid = p[key]
         existing = ledger.get(mid)
         if existing and existing.get("locked") == "1":
             stats["skipped_locked"] += 1
@@ -78,8 +81,8 @@ def update(ledger: dict[str, dict], predictions: list[dict], match_state: dict[s
         if ko is None or ko <= now:
             stats["skipped_started"] += 1
             continue
-        row = {c: "" for c in COLUMNS}
-        row.update({k: ("" if v is None else str(v)) for k, v in p.items() if k in COLUMNS})
+        row = {c: "" for c in columns}
+        row.update({k: ("" if v is None else str(v)) for k, v in p.items() if k in columns})
         row["predicted_at"] = _iso(now)
         row["first_predicted_at"] = existing["first_predicted_at"] if existing else _iso(now)
         row["locked"] = "0"
