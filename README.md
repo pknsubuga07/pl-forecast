@@ -309,6 +309,85 @@ Teams are mapped in the same `data/team_aliases.csv`; NFL relocations keep one i
 * NBA standings are ordered by win % and point differential, not the league's official
   tie-breakers.
 
+## Parlays and player props
+
+### Daily parlays (`/parlays`)
+
+**How they're built** ([`model/parlays.py`](model/parlays.py)):
+* **Legs:** every Premier League, NBA and NFL game on a given New York date where the model's
+  pick is **medium or high confidence** and a bookmaker price exists for it.
+* **Candidates:** every 2-, 3- and 4-leg combination of the 12 strongest legs. Legs are treated
+  as independent, so a parlay's probability is the product of its legs'.
+* **Selection, 5–10 per day:**
+  1. the safest double
+  2. the safest treble
+  3. the safest four-fold
+  4. the best model-vs-market value
+  5. the best cross-sport combination
+  6. then the most likely remaining combinations
+
+  No leg is used in more than three parlays, and nothing below a 10% chance is suggested.
+* **Each parlay shows:** the model's chance, the market's chance (margin removed), the break-even
+  chance implied by the payout, and what $10 returns.
+
+**Freezing and settling:** a day's parlays are rebuilt on each run until its first leg starts,
+then frozen in `data/ledger/parlays.csv`. They're settled automatically: won, lost, or void if a
+leg is postponed.
+
+**Backtest:** the same rules, run on walk-forward predictions for 2021–2025 (all three sports)
+at the bookmaker prices of the time, with $1 per parlay:
+
+| Type | Parlays | Won | Model expected | Return per $1 |
+|---|---:|---:|---:|---:|
+| All | 5,568 | 45.9% | 44.4% | −10.1% |
+| Safest double | 980 | 60.6% | 58.3% | −7.1% |
+| Safest treble | 850 | 43.9% | 42.3% | −13.2% |
+| Safest four-fold | 702 | 32.9% | 30.1% | −15.4% |
+| Best value vs market | 472 | 27.5% | 39.5% | −16.9% |
+| Cross-sport | 345 | 51.9% | 45.9% | −1.3% |
+
+* The model's probabilities are honest: hit rates are close to what it expected.
+* The parlays still lose money because the payouts carry the bookmaker's margin on every leg.
+* "Best value" is the worst type. When the model disagrees with the market, the market is
+  usually right.
+
+The page says this up front. Re-run the backtest with:
+
+```bash
+.venv/bin/python -m pipeline.parlay_export
+```
+
+### Player props (`/nba/props`, `/nfl/props`)
+
+**Lines:** DraftKings player lines via ESPN's core API, free, and kept for past games.
+* NBA markets: points, rebounds, assists, 3-pointers, points + rebounds + assists.
+* NFL markets: passing, rushing and receiving yards, receptions, anytime touchdown.
+
+**Player stats:**
+* NBA: ESPN box scores from 2024-25 onward.
+* NFL: nflverse weekly player stats from 2023 onward, mapped to ESPN ids through nflverse
+  `players.csv`.
+
+**Injuries:** each team's ESPN roster gives injury status. Players who are Out, Doubtful, on IR
+or suspended are dropped; Questionable and Day-To-Day players are flagged.
+
+**The model** ([`model/props.py`](model/props.py)):
+* A ridge regression projects the stat from the player's last 5, 10 and 20 games, season
+  average, and minutes or usage trend, using only games before kickoff.
+* P(over) comes from a normal distribution around the projection, then a logistic calibration.
+  Anytime TD uses a Poisson rate instead.
+* It's fitted on one season's real lines and tested on the next.
+* Confidence for the model's side: high ≥ 62%, medium ≥ 56%.
+* Medium and high-confidence picks (up to 8 per game) are frozen at tip-off in
+  `data/ledger/<sport>_props.csv` and settled from the box scores.
+
+**A bug I caught, and a guard against it:** the first backtest looked spectacular (a 62–66% hit
+rate). That was a parsing bug, not an edge. "Total Points and Assists" and similar combined
+markets had been filed under plain points and assists. The evaluation now flags any market whose
+overs hit outside 40–60% in training and excludes it, and a test pins the market-name matching.
+
+**Props backtest:** being re-run on clean lines after the fix above; results will be added here and on the props pages.
+
 ## Scheduled updates
 
 [`.github/workflows/update.yml`](.github/workflows/update.yml) runs on GitHub Actions on this

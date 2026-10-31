@@ -4,9 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const SPORTS = [
-  { href: "/", label: "Premier League", match: (p: string) => !p.startsWith("/nba") && !p.startsWith("/nfl") },
+  { href: "/", label: "Premier League", match: (p: string) => !/^\/(nba|nfl|parlays)/.test(p) },
   { href: "/nba", label: "NBA", match: (p: string) => p.startsWith("/nba") },
   { href: "/nfl", label: "NFL", match: (p: string) => p.startsWith("/nfl") },
+  { href: "/parlays", label: "Parlays", match: (p: string) => p.startsWith("/parlays") },
 ];
 
 export function SportTabs() {

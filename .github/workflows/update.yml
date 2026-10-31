@@ -63,6 +63,9 @@ jobs:
             python -m model.evaluate
             python -m model.us_evaluate nfl
             python -m model.us_evaluate nba
+            python -m model.props evaluate nba
+            python -m model.props evaluate nfl
+            python -m pipeline.parlay_export
             ARGS="--retrain"
           fi
           set +e

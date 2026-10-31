@@ -185,6 +185,13 @@ def evaluate(conn, sport: str) -> dict:
                       np.clip(preds["ensemble"].reindex(curf.index), 1e-6, 1 - 1e-6))).round(2),
                   "pred_total": mdf["pred_total"].reindex(curf.index).round(1)}
                  ).dropna().to_csv(LEDGER_DIR / f"{sport}_backtest_current_season.csv", index=False)
+    # Walk-forward predictions + moneylines, used by the parlay backtest.
+    rows = frame.index[frame["status"] == "FINISHED"].intersection(preds["ensemble"].index)
+    wf_out = pd.DataFrame({"game_id": frame.loc[rows, "game_id"], "kickoff_utc": frame.loc[rows, "kickoff_utc"],
+                           "season": frame.loc[rows, "season"], "p_home": preds["ensemble"].loc[rows], "y": frame.loc[rows, "y"],
+                           "home": frame.loc[rows, "home_id"], "away": frame.loc[rows, "away_id"]})
+    wf_out = wf_out.join(mk[["home_ml", "away_ml"]], on="game_id")
+    wf_out.round(5).to_csv(out_dir / "walkforward.csv", index=False)
     write_report(res)
     return res
 

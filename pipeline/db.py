@@ -135,6 +135,44 @@ CREATE TABLE IF NOT EXISTS us_odds (
     PRIMARY KEY (game_id, source)
 );
 
+-- Player props (NBA / NFL). Athlete ids are ESPN ids.
+CREATE TABLE IF NOT EXISTS us_players (
+    athlete_id TEXT NOT NULL,
+    sport      TEXT NOT NULL,
+    name       TEXT NOT NULL,
+    team_id    TEXT,
+    position   TEXT,
+    injury     TEXT,                        -- latest injury status from ESPN rosters ('Out', 'Day-To-Day', ...)
+    updated_at TEXT NOT NULL,
+    PRIMARY KEY (sport, athlete_id)
+);
+
+CREATE TABLE IF NOT EXISTS us_player_games (
+    sport      TEXT NOT NULL,
+    game_id    TEXT NOT NULL,
+    athlete_id TEXT NOT NULL,
+    team_id    TEXT,
+    kickoff_utc TEXT,
+    minutes REAL,
+    pts REAL, reb REAL, ast REAL, fg3m REAL,                      -- NBA
+    pass_yds REAL, pass_att REAL, rush_yds REAL, carries REAL,    -- NFL
+    rec REAL, targets REAL, rec_yds REAL, tds REAL,
+    PRIMARY KEY (game_id, athlete_id)
+);
+CREATE INDEX IF NOT EXISTS idx_player_games ON us_player_games(sport, athlete_id, kickoff_utc);
+
+CREATE TABLE IF NOT EXISTS us_props (
+    game_id    TEXT NOT NULL,
+    athlete_id TEXT NOT NULL,
+    market     TEXT NOT NULL,               -- pts | reb | ast | fg3m | pra | pass_yds | rush_yds | rec_yds | rec | anytime_td
+    line       REAL NOT NULL,
+    price_a    REAL,                        -- American odds of the first listed side
+    price_b    REAL,                        -- second listed side (NULL for one-sided markets)
+    provider   TEXT,
+    fetched_at TEXT NOT NULL,
+    PRIMARY KEY (game_id, athlete_id, market)
+);
+
 CREATE TABLE IF NOT EXISTS pipeline_runs (
     run_id      INTEGER PRIMARY KEY AUTOINCREMENT,
     started_at  TEXT NOT NULL,
@@ -154,7 +192,7 @@ CREATE TABLE IF NOT EXISTS source_status (
 
 def connect(path: Path | str = DB_PATH) -> sqlite3.Connection:
     Path(path).parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(path, isolation_level=None)  # autocommit; transaction() opens explicit ones
+    conn = sqlite3.connect(path, isolation_level=None, timeout=60)  # autocommit; transaction() opens explicit ones
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     conn.executescript(SCHEMA)

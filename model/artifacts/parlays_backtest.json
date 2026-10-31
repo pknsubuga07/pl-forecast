@@ -1,0 +1,130 @@
+{
+  "days": 980,
+  "all": {
+    "n": 5568,
+    "hit_rate": 0.4594109195402299,
+    "expected_hit_rate_model": 0.44351815545777407,
+    "expected_hit_rate_market": 0.4517341515885119,
+    "avg_odds": 2.6187054952020095,
+    "roi": -0.10139276888550706
+  },
+  "by_legs": {
+    "2": {
+      "n": 3927,
+      "hit_rate": 0.4945250827603769,
+      "expected_hit_rate_model": 0.47698109771838554,
+      "expected_hit_rate_market": 0.4874949146381771,
+      "avg_odds": 2.49915508899993,
+      "roi": -0.08222369048033677
+    },
+    "3": {
+      "n": 939,
+      "hit_rate": 0.410010649627263,
+      "expected_hit_rate_model": 0.4100961932700302,
+      "expected_hit_rate_market": 0.4056354959854877,
+      "avg_odds": 2.6267282845279833,
+      "roi": -0.14259788200293214
+    },
+    "4": {
+      "n": 702,
+      "hit_rate": 0.32905982905982906,
+      "expected_hit_rate_model": 0.3010313295843701,
+      "expected_hit_rate_market": 0.3133497087326775,
+      "avg_odds": 3.276741173234027,
+      "roi": -0.15350868011035262
+    }
+  },
+  "by_tag": {
+    "Best value vs market": {
+      "n": 472,
+      "hit_rate": 0.2754237288135593,
+      "expected_hit_rate_model": 0.3949473930578981,
+      "expected_hit_rate_market": 0.3000046739100739,
+      "avg_odds": 6.518438260823509,
+      "roi": -0.16912348839316327
+    },
+    "Cross-sport": {
+      "n": 345,
+      "hit_rate": 0.518840579710145,
+      "expected_hit_rate_model": 0.4587880557411594,
+      "expected_hit_rate_market": 0.48273055387331176,
+      "avg_odds": 1.9980018361757088,
+      "roi": -0.013142670223072648
+    },
+    "Safest double": {
+      "n": 980,
+      "hit_rate": 0.6061224489795919,
+      "expected_hit_rate_model": 0.5830150189458163,
+      "expected_hit_rate_market": 0.5883271339869611,
+      "avg_odds": 1.663384516485042,
+      "roi": -0.07052779828222235
+    },
+    "Safest four-fold": {
+      "n": 702,
+      "hit_rate": 0.32905982905982906,
+      "expected_hit_rate_model": 0.3010313295843701,
+      "expected_hit_rate_market": 0.3133497087326775,
+      "avg_odds": 3.276741173234027,
+      "roi": -0.15350868011035262
+    },
+    "Safest treble": {
+      "n": 850,
+      "hit_rate": 0.4388235294117647,
+      "expected_hit_rate_model": 0.42262032401921235,
+      "expected_hit_rate_market": 0.4283720497808067,
+      "avg_odds": 2.3263592982314356,
+      "roi": -0.13152570995409568
+    }
+  },
+  "by_year": {
+    "2021": {
+      "n": 503,
+      "hit_rate": 0.4095427435387674,
+      "expected_hit_rate_model": 0.43779492697172945,
+      "expected_hit_rate_market": 0.44389581231035924,
+      "avg_odds": 2.399630740278127,
+      "roi": -0.1592720648551523
+    },
+    "2022": {
+      "n": 1097,
+      "hit_rate": 0.41476754785779396,
+      "expected_hit_rate_model": 0.4326439154649929,
+      "expected_hit_rate_market": 0.4324181668051113,
+      "avg_odds": 2.3773085209962628,
+      "roi": -0.1584093184834637
+    },
+    "2023": {
+      "n": 1030,
+      "hit_rate": 0.46116504854368934,
+      "expected_hit_rate_model": 0.4175353355875464,
+      "expected_hit_rate_market": 0.42395343423517845,
+      "avg_odds": 2.454794280380938,
+      "roi": -0.02725841730772652
+    },
+    "2024": {
+      "n": 1159,
+      "hit_rate": 0.47627264883520276,
+      "expected_hit_rate_model": 0.4591058545096347,
+      "expected_hit_rate_market": 0.4658716433086289,
+      "avg_odds": 2.276607053619384,
+      "roi": -0.11342496091442127
+    },
+    "2025": {
+      "n": 1146,
+      "hit_rate": 0.4816753926701571,
+      "expected_hit_rate_model": 0.45897926533934386,
+      "expected_hit_rate_market": 0.4686757465760588,
+      "avg_odds": 3.688560739680693,
+      "roi": -0.09271268946452585
+    },
+    "2026": {
+      "n": 633,
+      "hit_rate": 0.5023696682464455,
+      "expected_hit_rate_model": 0.4526580520478381,
+      "expected_hit_rate_market": 0.48008492264521074,
+      "avg_odds": 2.167321004392867,
+      "roi": -0.07090304028891456
+    }
+  },
+  "seasons": "2021-22 to 2025-26 (Premier League, NBA) and 2021 to 2025 (NFL), walk-forward predictions"
+}

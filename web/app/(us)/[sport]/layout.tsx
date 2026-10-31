@@ -15,6 +15,7 @@ export default async function SportLayout({ children, params }: LayoutProps<"/[s
   const meta = usMeta(sport);
   const nav = [
     { href: `/${sport}`, label: "Games" },
+    { href: `/${sport}/props`, label: "Player props" },
     { href: `/${sport}/standings`, label: "Standings" },
     { href: `/${sport}/history`, label: "History" },
     { href: `/${sport}/performance`, label: "Performance" },

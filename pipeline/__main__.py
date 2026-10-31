@@ -95,7 +95,36 @@ def update_us(conn, sport: str, args, now: pd.Timestamp) -> dict:
     ledger.write(led, path, us_export.LEDGER_COLUMNS)
     log.info("%s ledger: %s", sport, stats["ledger"])
     us_export.export_sport(conn, sport, preds, fs, manifest, {"finished_at": _now_iso()})
+    stats["props"] = update_props(conn, sport, preds)
     return stats
+
+
+def update_props(conn, sport: str, preds: list[dict]) -> dict:
+    """Best effort: a props failure is recorded but never blocks the game predictions."""
+    from model import props as PR
+
+    from . import props_ingest, us_export
+    from .ingest import record_source
+
+    name = f"espn-{sport}-props"
+    try:
+        ids = [p["game_id"] for p in preds]
+        upcoming = conn.execute(f"SELECT game_id, espn_id FROM us_games WHERE game_id IN ({','.join('?' * len(ids))})", ids).fetchall() if ids else []
+        season = max((p["season"] for p in preds), default=None) or conn.execute(
+            "SELECT MAX(season) FROM us_games WHERE sport=?", (sport,)).fetchone()[0]
+        stats = props_ingest.update_props(conn, sport, [tuple(r) for r in upcoming], season)
+        props = PR.predict_upcoming(conn, sport, ids)
+        stats["ledger"] = us_export.update_props_ledger(conn, sport, props, _now_iso())
+        us_export.export_props(conn, sport, props, preds)
+        stats["projected"] = len(props)
+        with transaction(conn):
+            record_source(conn, name)
+        return stats
+    except Exception as exc:  # noqa: BLE001
+        log.exception("%s props failed", sport)
+        with transaction(conn):
+            record_source(conn, name, error=f"{type(exc).__name__}: {exc}")
+        return {"error": str(exc)}
 
 
 SPORTS = {"pl": update_pl, "nba": lambda c, a, n: update_us(c, "nba", a, n), "nfl": lambda c, a, n: update_us(c, "nfl", a, n)}
@@ -116,6 +145,13 @@ def cmd_update(args) -> int:
             log.exception("%s update failed", sport)
             failed.append(sport)
             results[sport] = {"error": f"{type(exc).__name__}: {exc}"}
+    if len(failed) < len(args.sports):
+        try:
+            from . import parlay_export
+            results["parlays"] = parlay_export.update(conn)
+        except Exception as exc:  # noqa: BLE001
+            log.exception("parlays failed")
+            results["parlays"] = {"error": str(exc)}
     status = "ok" if not failed else "failed" if len(failed) == len(args.sports) else "partial"
     with transaction(conn):
         conn.execute("UPDATE pipeline_runs SET finished_at=?, status=?, message=? WHERE run_id=?",
@@ -157,8 +193,21 @@ def cmd_bootstrap(args) -> int:
             if sport == "nba":
                 us_ingest.backfill_nba_odds(conn, range(2021, current_season() + 1))
             us_evaluate.evaluate(conn, sport)
+        from model import props as PR
         from model import us_predict
+
+        from . import props_ingest
         us_predict.train(conn, sport)
+        if sport == "nba":
+            props_ingest.backfill_nba_boxscores(conn, range(2024, current_season() + 1))
+        else:
+            props_ingest.load_nfl_player_stats(conn, range(2023, current_season() + 1), current_season())
+        if not (ARTIFACTS_DIR / sport / "props_models.pkl").exists() or args.evaluate:
+            props_ingest.backfill_props(conn, sport, range(2024, current_season() + 1))
+            PR.evaluate(conn, sport)
+    if not (ARTIFACTS_DIR / "parlays_backtest.json").exists() or args.evaluate:
+        from . import parlay_export
+        parlay_export.run_backtest()
     return cmd_update(argparse.Namespace(retrain=False, skip_espn=False, refresh_all=False, gameweeks=3, sports=list(SPORTS)))
 
 

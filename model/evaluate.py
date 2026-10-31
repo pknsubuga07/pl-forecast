@@ -255,6 +255,14 @@ def evaluate(conn) -> dict:
     })
     LEDGER_DIR.mkdir(parents=True, exist_ok=True)
     bt.to_csv(LEDGER_DIR / "backtest_current_season.csv", index=False)
+    # Walk-forward predictions + market odds, used by the parlay backtest.
+    odds = pd.read_sql_query("SELECT match_id, odds_h, odds_d, odds_a FROM odds WHERE bookmaker='avg'", conn).set_index("match_id")
+    wfr = fin[fin["season"].isin(VALID + TEST + [CURRENT])]
+    wf_out = pd.DataFrame({"game_id": wfr["match_id"], "kickoff_utc": wfr["kickoff_utc"], "season": wfr["season"],
+                           "p_h": preds["ensemble"].loc[wfr.index, "p_h"], "p_d": preds["ensemble"].loc[wfr.index, "p_d"],
+                           "p_a": preds["ensemble"].loc[wfr.index, "p_a"], "y": wfr["y"],
+                           "home": wfr["home_id"], "away": wfr["away_id"]}).join(odds, on="game_id")
+    wf_out.round(5).to_csv(ARTIFACTS_DIR / "walkforward.csv", index=False)
     write_report(result)
     return result
 

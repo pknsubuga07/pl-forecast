@@ -1,6 +1,6 @@
 {
   "sport": "nfl",
-  "generated_at": "2026-10-29T20:13:53.591374+00:00",
+  "generated_at": "2026-10-30T06:09:39.220325+00:00",
   "labels": {
     "home": "Always home team (base rate)",
     "elo": "Elo (logistic on rating gap)",

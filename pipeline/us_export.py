@@ -1,6 +1,7 @@
 """Dashboard JSON for NBA / NFL (web/public/data/<sport>/*.json), swapped in atomically."""
 from __future__ import annotations
 
+import csv
 import json
 import logging
 import shutil
@@ -190,6 +191,7 @@ def export_sport(conn: sqlite3.Connection, sport: str, preds: list[dict], fs, ma
             "pred_margin": p["pred_margin"], "pred_total": p["pred_total"],
             "market_p_home": p["market_p_home"], "market_spread_home": p["market_spread_home"], "market_total": p["market_total"],
             "market_label": mk["label"] if mk else None, "disagreement": p["disagreement"],
+            "market_ml": [mk["home_ml"], mk["away_ml"]] if mk else None,
         }
         for t in ("home", "away"):
             summary[t]["record"] = {k: summary[t]["record"][k] for k in ("w", "l", "t", "pct", "conf_rank", "streak")}
@@ -234,3 +236,95 @@ def export_sport(conn: sqlite3.Connection, sport: str, preds: list[dict], fs, ma
         shutil.rmtree(out)
     tmp.rename(out)
     log.info("Exported %d %s games", len(games), sport)
+
+
+# --------------------------------------------------------------------------- player props
+PROPS_LEDGER_COLUMNS = ["prop_id", "sport", "game_id", "kickoff_utc", "athlete_id", "player", "market", "line", "side",
+                        "p_side", "p_market", "price", "projection", "confidence", "predicted_at", "locked", "result", "actual"]
+MAX_LOGGED_PER_GAME = 8
+
+
+def props_ledger_path(sport: str):
+    return LEDGER_DIR / f"{sport}_props.csv"
+
+
+def update_props_ledger(conn, sport: str, props: list[dict], now_iso: str) -> dict:
+    """Freeze the medium/high-confidence props of each game at tip-off and settle them later."""
+    path = props_ledger_path(sport)
+    rows = {}
+    if path.exists():
+        with open(path, newline="") as f:
+            rows = {r["prop_id"]: r for r in csv.DictReader(f)}
+    kick = dict(conn.execute("SELECT game_id, kickoff_utc FROM us_games WHERE sport=?", (sport,)).fetchall())
+    status = dict(conn.execute("SELECT game_id, status FROM us_games WHERE sport=?", (sport,)).fetchall())
+    for r in rows.values():
+        if r["locked"] != "1" and (kick.get(r["game_id"]) or "9999") <= now_iso:
+            r["locked"] = "1"
+    by_game: dict[str, list[dict]] = {}
+    for p in props:
+        if p["confidence"] in ("high", "medium") and p["market"] != "anytime_td":
+            by_game.setdefault(p["game_id"], []).append(p)
+    for gid, ps in by_game.items():
+        if (kick.get(gid) or "") <= now_iso or any(r["game_id"] == gid and r["locked"] == "1" for r in rows.values()):
+            continue
+        for k in [k for k, r in rows.items() if r["game_id"] == gid]:
+            del rows[k]
+        for p in sorted(ps, key=lambda x: -x["p_side"])[:MAX_LOGGED_PER_GAME]:
+            pid = f"{gid}:{p['athlete_id']}:{p['market']}"
+            rows[pid] = {"prop_id": pid, "sport": sport, "game_id": gid, "kickoff_utc": kick[gid], "athlete_id": p["athlete_id"],
+                         "player": p["player"] or "", "market": p["market"], "line": p["line"], "side": p["side"],
+                         "p_side": p["p_side"], "p_market": "" if p["p_market"] is None else p["p_market"],
+                         "price": "" if p["price"] is None else p["price"], "projection": p["projection"],
+                         "confidence": p["confidence"], "predicted_at": now_iso, "locked": "0", "result": "", "actual": ""}
+    # Settle locked props once the player's box score / stat line is in.
+    from model.props import stat_value
+    pg = pd.read_sql_query("SELECT * FROM us_player_games WHERE sport=?", conn, params=(sport,))
+    for r in rows.values():
+        if r["locked"] == "1" and not r["result"] and status.get(r["game_id"]) == "FINISHED":
+            hit = pg[(pg["game_id"] == r["game_id"]) & (pg["athlete_id"].astype(str) == r["athlete_id"])]
+            if hit.empty:
+                r["result"] = "void"  # did not play
+                continue
+            actual = float(stat_value(hit, r["market"]).iloc[0])
+            line = float(r["line"])
+            r["actual"] = actual
+            r["result"] = "push" if actual == line else "won" if (actual > line) == (r["side"] == "Over") else "lost"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=PROPS_LEDGER_COLUMNS)
+        w.writeheader()
+        w.writerows(sorted(rows.values(), key=lambda r: (r["kickoff_utc"], r["prop_id"])))
+    return {"logged": len(rows)}
+
+
+def export_props(conn, sport: str, props: list[dict], preds: list[dict]) -> None:
+    teams = teams_info(conn, sport)
+    games = []
+    for g in preds:
+        ps = sorted([p for p in props if p["game_id"] == g["game_id"]], key=lambda p: (p["market"] == "anytime_td", -p["p_side"]))
+        if not ps:
+            continue
+        for p in ps:
+            t = teams.get(p["team_id"] or "")
+            p["team"] = t["short"] if t else None
+        games.append({"game_id": g["game_id"], "kickoff_utc": g["kickoff_utc"],
+                      "home": {k: teams[g["home_id"]][k] for k in ("id", "short", "nickname", "logo")},
+                      "away": {k: teams[g["away_id"]][k] for k in ("id", "short", "nickname", "logo")}, "props": ps})
+    ev_path = ARTIFACTS_DIR / sport / "props_evaluation.json"
+    record = None
+    lp = props_ledger_path(sport)
+    if lp.exists():
+        with open(lp, newline="") as f:
+            done = [r for r in csv.DictReader(f) if r["result"] in ("won", "lost")]
+        if done:
+            won = [r for r in done if r["result"] == "won"]
+            profit = sum((1 + (100 / -float(r["price"]) if float(r["price"]) < 0 else float(r["price"]) / 100)) - 1
+                         for r in won if r["price"]) - (len(done) - len(won))
+            record = {"n": len(done), "won": len(won), "hit_rate": len(won) / len(done), "roi": profit / len(done)}
+    data = {"sport": sport, "games": games, "record": record,
+            "evaluation": json.loads(ev_path.read_text()) if ev_path.exists() else None}
+    out = WEB_DATA_DIR / sport / "props.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    tmp = out.with_suffix(".tmp")
+    tmp.write_text(json.dumps(_clean(data), separators=(",", ":"), allow_nan=False))
+    tmp.replace(out)

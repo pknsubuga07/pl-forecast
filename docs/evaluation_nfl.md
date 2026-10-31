@@ -1,6 +1,6 @@
 # NFL model evaluation
 
-_Generated 2026-10-29 20:13 UTC by `python -m model.us_evaluate nfl`._
+_Generated 2026-10-30 06:09 UTC by `python -m model.us_evaluate nfl`._
 
 Walk-forward by season: each season is predicted by models trained only on earlier seasons.
 Settings were chosen on the validation seasons; the test seasons were scored once. All rows

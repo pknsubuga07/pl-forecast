@@ -286,6 +286,7 @@ def export_all(conn: sqlite3.Connection, preds: list[dict], fs: F.FeatureSet, ma
             "p": [p["p_home"], p["p_draw"], p["p_away"]], "predicted": p["predicted"], "confidence": p["confidence"],
             "xg": [p["xg_home"], p["xg_away"]], "top_score": p["top_scores"][0],
             "market_p": p["market"]["p"] if p["market"] else None,
+            "market_odds": p["market"]["odds"] if p["market"] else None,
             "market_source": p["market"]["label"] if p["market"] else None,
             "disagreement": p["disagreement"], "market_diff": p["market_diff"],
         }
