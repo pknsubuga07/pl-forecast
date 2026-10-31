@@ -386,7 +386,34 @@ rate). That was a parsing bug, not an edge. "Total Points and Assists" and simil
 markets had been filed under plain points and assists. The evaluation now flags any market whose
 overs hit outside 40–60% in training and excludes it, and a test pins the market-name matching.
 
-**Props backtest:** being re-run on clean lines after the fix above; results will be added here and on the props pages.
+**Props backtest:** fitted on 2024 (NBA 2024-25) lines and scored on 2025 and 2026 so far.
+"Confident" means the model gives its side at least 56%. NBA returns are at the real prices;
+NFL returns assume -110, because ESPN doesn't keep NFL prop prices.
+
+| Market | Test props | Model miss / line miss | Confident picks won | Return |
+|---|---:|---:|---:|---:|
+| NBA points | 6,911 | 5.24 / 4.90 | (no confident picks) | – |
+| NBA rebounds | 6,322 | 2.12 / 2.07 | 56.0% of 1,197 | +5.2% |
+| NBA assists | 4,715 | 1.69 / 1.68 | 56.8% of 1,023 | +9.0% |
+| NBA 3-pointers | 5,396 | 1.17 / 1.17 | 58.1% of 2,195 | +8.0% |
+| NBA pts + reb + ast | 5,238 | 6.84 / 6.39 | 3 picks | – |
+| NFL passing yards | 596 | 58.0 / 54.7 | 48.9% of 184 | −6.6%* |
+| NFL rushing yards | 1,719 | 19.9 / 18.2 | 54.6% of 531 | +4.3%* |
+| NFL receiving yards | 3,369 | 21.6 / 20.3 | 55.1% of 801 | +5.1%* |
+| NFL receptions | 3,330 | 1.59 / 1.54 | 57.0% of 1,673 | +8.9%* |
+
+\* at an assumed -110.
+
+How to read this:
+* The bookmaker's line is closer to the final number than the model's projection in almost
+  every market. The model is not a better forecaster of player stats.
+* The small positive returns come almost entirely from leaning **under** on lower-count markets:
+  overs hit only 45–46% in training.
+* This is one out-of-sample season, a few thousand bets. Real under prices are often worse than
+  -110, which would shrink or erase the NFL numbers.
+* Treat it as an interesting pattern to watch on the live record, not a proven edge.
+* Anytime-TD probabilities beat the simple base rate (log loss 0.438 vs 0.488), but can't be
+  compared with the market because past prices aren't available.
 
 ## Scheduled updates
 

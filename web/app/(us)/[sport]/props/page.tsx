@@ -28,6 +28,7 @@ export default async function PropsPage({ params }: PageProps<"/[sport]/props">)
           A projection for every player line DraftKings posts (via ESPN), from each player&apos;s recent games, with the
           model&apos;s chance of the over or under next to the market&apos;s. Confidence: high ≥ 62%, medium ≥ 56% for the
           model&apos;s side. Players listed Out, Doubtful or on IR are removed; Questionable and Day-To-Day are flagged.
+          {sport === "nfl" && " ESPN currently shows NFL prop lines without their prices, so the market column is blank and returns assume the standard -110."}
         </p>
       </div>
       <div className="rounded-xl border border-warn/40 bg-warn/10 p-4 text-sm">

@@ -330,4 +330,6 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     from pipeline import db
     if sys.argv[1] == "evaluate":
-        print(json.dumps(evaluate(db.connect(), sys.argv[2]), indent=1))
+        # Call through the package so pickled models reference model.props, not __main__.
+        from model import props as _props
+        print(json.dumps(_props.evaluate(db.connect(), sys.argv[2]), indent=1))

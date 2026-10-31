@@ -1,0 +1,83 @@
+{
+  "sport": "nfl",
+  "train_season": 2024,
+  "test_seasons": [
+    2025,
+    2026
+  ],
+  "first_price_is_over": true,
+  "markets": {
+    "pass_yds": {
+      "label": "Passing yards",
+      "n_train": 534,
+      "n_test": 596,
+      "mae_projection": 57.95300183298685,
+      "mae_line": 54.65604026845637,
+      "log_loss_model": 0.7021422864167124,
+      "log_loss_market": 0.6931471805599453,
+      "hit_rate_all": 0.47818791946308725,
+      "roi_all": -0.0870957901159243,
+      "bets_confident": 184,
+      "hit_rate_confident": 0.4891304347826087,
+      "roi_confident": -0.0662055335968379,
+      "over_rate_train": 0.5074906367041199,
+      "assumed_prices": true
+    },
+    "rush_yds": {
+      "label": "Rushing yards",
+      "n_train": 1338,
+      "n_test": 1719,
+      "mae_projection": 19.902251969058728,
+      "mae_line": 18.219604421175102,
+      "log_loss_model": 0.6941112773505116,
+      "log_loss_market": 0.6931471805599454,
+      "hit_rate_all": 0.5369400814426992,
+      "roi_all": 0.02506742820878951,
+      "bets_confident": 531,
+      "hit_rate_confident": 0.5461393596986818,
+      "roi_confident": 0.04262968669748335,
+      "over_rate_train": 0.4461883408071749,
+      "assumed_prices": true
+    },
+    "rec_yds": {
+      "label": "Receiving yards",
+      "n_train": 3068,
+      "n_test": 3369,
+      "mae_projection": 21.580923794149406,
+      "mae_line": 20.287177203918077,
+      "log_loss_model": 0.6924677133958874,
+      "log_loss_market": 0.6931471805599452,
+      "hit_rate_all": 0.5325022261798753,
+      "roi_all": 0.016595159070671137,
+      "bets_confident": 801,
+      "hit_rate_confident": 0.550561797752809,
+      "roi_confident": 0.05107252298263537,
+      "over_rate_train": 0.461864406779661,
+      "assumed_prices": true
+    },
+    "rec": {
+      "label": "Receptions",
+      "n_train": 2915,
+      "n_test": 3330,
+      "mae_projection": 1.5921181394823452,
+      "mae_line": 1.5414414414414415,
+      "log_loss_model": 0.6907598204418098,
+      "log_loss_market": 0.6931471805599452,
+      "hit_rate_all": 0.5483483483483483,
+      "roi_all": 0.04684684684684689,
+      "bets_confident": 1673,
+      "hit_rate_confident": 0.5702331141661685,
+      "roi_confident": 0.08862685431723094,
+      "over_rate_train": 0.44939965694682676,
+      "assumed_prices": true
+    },
+    "anytime_td": {
+      "label": "Anytime touchdown",
+      "n_train": 5127,
+      "n_test": 6376,
+      "log_loss_model": 0.43768068173190633,
+      "log_loss_base_rate": 0.48797689888681334,
+      "note": "past prices not kept by ESPN; scored against the base rate only"
+    }
+  }
+}

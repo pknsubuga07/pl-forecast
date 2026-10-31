@@ -318,8 +318,10 @@ def export_props(conn, sport: str, props: list[dict], preds: list[dict]) -> None
             done = [r for r in csv.DictReader(f) if r["result"] in ("won", "lost")]
         if done:
             won = [r for r in done if r["result"] == "won"]
-            profit = sum((1 + (100 / -float(r["price"]) if float(r["price"]) < 0 else float(r["price"]) / 100)) - 1
-                         for r in won if r["price"]) - (len(done) - len(won))
+            def payout(r):  # profit on a won $1 bet; ESPN shows no NFL prop prices, so assume -110 there
+                x = float(r["price"]) if r["price"] not in ("", None) else -110.0
+                return 100 / -x if x < 0 else x / 100
+            profit = sum(payout(r) for r in won) - (len(done) - len(won))
             record = {"n": len(done), "won": len(won), "hit_rate": len(won) / len(done), "roi": profit / len(done)}
     data = {"sport": sport, "games": games, "record": record,
             "evaluation": json.loads(ev_path.read_text()) if ev_path.exists() else None}

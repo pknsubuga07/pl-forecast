@@ -1,0 +1,91 @@
+{
+  "sport": "nba",
+  "train_season": 2024,
+  "test_seasons": [
+    2025,
+    2026
+  ],
+  "first_price_is_over": true,
+  "markets": {
+    "pts": {
+      "label": "Points",
+      "n_train": 13741,
+      "n_test": 6911,
+      "mae_projection": 5.240719977076044,
+      "mae_line": 4.89675879033425,
+      "log_loss_model": 0.6929743533585385,
+      "log_loss_market": 0.693284055094064,
+      "hit_rate_all": 0.510989010989011,
+      "roi_all": -0.043755228588030375,
+      "bets_confident": 0,
+      "hit_rate_confident": null,
+      "roi_confident": null,
+      "over_rate_train": 0.4813332363001237,
+      "assumed_prices": false
+    },
+    "reb": {
+      "label": "Rebounds",
+      "n_train": 13748,
+      "n_test": 6322,
+      "mae_projection": 2.118762726677761,
+      "mae_line": 2.0700727617842456,
+      "log_loss_model": 0.69232960855705,
+      "log_loss_market": 0.6937530309917675,
+      "hit_rate_all": 0.5165610859728507,
+      "roi_all": -0.036019391227128376,
+      "bets_confident": 1197,
+      "hit_rate_confident": 0.5597326649958229,
+      "roi_confident": 0.0519939773811927,
+      "over_rate_train": 0.45519348268839105,
+      "assumed_prices": false
+    },
+    "ast": {
+      "label": "Assists",
+      "n_train": 13693,
+      "n_test": 4715,
+      "mae_projection": 1.6915537530271179,
+      "mae_line": 1.6749734888653234,
+      "log_loss_model": 0.6884382821875729,
+      "log_loss_market": 0.6937537315441605,
+      "hit_rate_all": 0.5441141498216409,
+      "roi_all": 0.029640155011550446,
+      "bets_confident": 1023,
+      "hit_rate_confident": 0.5679374389051809,
+      "roi_confident": 0.08962468559481368,
+      "over_rate_train": 0.4624990871248083,
+      "assumed_prices": false
+    },
+    "fg3m": {
+      "label": "3-pointers made",
+      "n_train": 12472,
+      "n_test": 5396,
+      "mae_projection": 1.1690771220832292,
+      "mae_line": 1.1686434395848777,
+      "log_loss_model": 0.686714463035164,
+      "log_loss_market": 0.6921613653434209,
+      "hit_rate_all": 0.5596516102896496,
+      "roi_all": 0.03584099355106622,
+      "bets_confident": 2195,
+      "hit_rate_confident": 0.5808656036446469,
+      "roi_confident": 0.08000687809413874,
+      "over_rate_train": 0.45301475304682487,
+      "assumed_prices": false
+    },
+    "pra": {
+      "label": "Points + rebounds + assists",
+      "n_train": 6320,
+      "n_test": 5238,
+      "mae_projection": 6.837119522907923,
+      "mae_line": 6.389270714012982,
+      "log_loss_model": 0.6929103674501363,
+      "log_loss_market": 0.6927092923616425,
+      "hit_rate_all": 0.5164952870608398,
+      "roi_all": -0.03418895849831466,
+      "bets_confident": 3,
+      "hit_rate_confident": 0.6666666666666666,
+      "roi_confident": 0.24747474747474754,
+      "over_rate_train": 0.48037974683544304,
+      "assumed_prices": false
+    }
+  }
+}
