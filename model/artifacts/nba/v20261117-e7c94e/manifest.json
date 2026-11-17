@@ -1,0 +1,96 @@
+{
+  "version": "v20261117-e7c94e",
+  "sport": "nba",
+  "trained_at": "2026-11-17T15:54:51.483795+00:00",
+  "n_train": 15647,
+  "train_from": "2014-10-29T00:00:00Z",
+  "train_to": "2026-11-17T02:00:00Z",
+  "hyperparams": {
+    "elo": {
+      "k": 8,
+      "home_adv": 40,
+      "season_regression": 0.4
+    },
+    "ridge_alpha": 100.0,
+    "gbm": {
+      "learning_rate": 0.03,
+      "max_iter": 200,
+      "max_depth": 2,
+      "min_samples_leaf": 100,
+      "l2_regularization": 1.0
+    },
+    "ensemble_weights": {
+      "elo": 0.35,
+      "margin": 0.5,
+      "gbm": 0.15
+    },
+    "validation_seasons": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020
+    ],
+    "test_seasons": [
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ]
+  },
+  "features": [
+    "elo_home",
+    "elo_away",
+    "elo_diff",
+    "neutral",
+    "playoff",
+    "margin_s_h",
+    "margin_s_a",
+    "margin_l_h",
+    "margin_l_a",
+    "pf_l_h",
+    "pf_l_a",
+    "pa_l_h",
+    "pa_l_a",
+    "venue_margin_h",
+    "venue_margin_a",
+    "std_winpct_h",
+    "std_winpct_a",
+    "std_margin_h",
+    "std_margin_a",
+    "season_game",
+    "rest_h",
+    "rest_a",
+    "b2b_h",
+    "b2b_a"
+  ],
+  "neutral_values": {
+    "elo_home": 1507.365698332156,
+    "elo_away": 1507.7024513403694,
+    "elo_diff": -0.3367530082137782,
+    "neutral": 0.0021090304850770116,
+    "playoff": 0.06391001469930338,
+    "margin_s_h": -0.11802608028637178,
+    "margin_s_a": 0.09970591995908452,
+    "margin_l_h": -0.04748572402625075,
+    "margin_l_a": 0.02220091207432978,
+    "pf_l_h": 109.52655757265832,
+    "pf_l_a": 109.62272087968292,
+    "pa_l_h": 109.57404329668458,
+    "pa_l_a": 109.60051996760859,
+    "venue_margin_h": 2.289358982552566,
+    "venue_margin_a": -2.2904752774759802,
+    "std_winpct_h": 0.5077700782609428,
+    "std_winpct_a": 0.5113936193543203,
+    "std_margin_h": 0.2399980412474553,
+    "std_margin_a": 0.35691564918071733,
+    "season_game": 42.29529622291813,
+    "rest_h": 2.201565795360133,
+    "rest_a": 2.0832888626147716,
+    "b2b_h": 0.1381734517798939,
+    "b2b_a": 0.20841055793442834
+  },
+  "python": "3.14.10",
+  "sklearn": "1.9.1"
+}
